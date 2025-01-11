@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:./dev.db"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+abstract model Entity {
+    id Int @id @default(autoincrement())
+}
+
+abstract model TimeStamps {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+// System user
+model SysUser extends TimeStamps {
+    user   User    @relation(fields: [userId], references: [id])
+    userId Int     @unique
+
+    role   String? // ceo, e.t.c
+}
+
+// Tenant
+model School extends Entity, TimeStamps {
+    name        String
+    email       String       @unique @email
+    address     String
+    phone       String
+    logo        String?
+
+    schoolUsers SchoolUser[]
+    subjects    Subject[]
+
+    // System users to create or register schools
+    // @@allow('create', true)
+}
+
+model User extends Entity, TimeStamps {
+    username    String       @unique @length(min: 4, max: 8)
+    password    String       @omit @password
+
+    schoolUsers SchoolUser[]
+    sysUsers    SysUser[]
+}
+
+model SchoolUser {
+    school   School    @relation(fields: [schoolId], references: [id])
+    schoolId Int
+    user     User      @relation(fields: [userId], references: [id])
+    userId   Int
+
+    role     String? // i.e. school, student, staff, parent
+
+    @@unique([userId, schoolId])
+
+    // School's students
+    students Student[]
+    // School's staff
+    staff    Staff[]
+}
+
+model Student extends TimeStamps {
+    schoolUser  SchoolUser @relation(fields: [id], references: [userId])
+    id          Int        @unique
+    classRoom   ClassRoom  @relation(fields: [classRoomId], references: [id])
+    classRoomId Int
+
+    firstName   String
+    lastName    String
+    surname     String?
+    gender      String
+    dateOfBirth String
+
+    // Student's parents
+    parents     Parent[]
+
+    // A student can only belong to a single class
+    @@unique([classRoomId, id])
+}
+
+model Staff extends TimeStamps {
+    schoolUser       SchoolUser    @relation(fields: [schoolUserId], references: [userId])
+    schoolUserId     Int           @unique
+    role             String        @default("NON-TEACHING")
+
+    teachers         Teacher[]
+    nonTeachingStaff NonTeaching[]
+}
+
+// model SchoolAdministrator {
+//     schoolUser  SchoolUser @relation(fields: [id], references: [userId])
+//     id          Int        @unique
+// }
+
+// Teaching staff
+model Teacher extends TimeStamps {
+    staff      Staff                 @relation(fields: [id], references: [schoolUserId])
+    id         Int                   @unique
+
+    name       String
+    email      String
+    phone      String
+
+    profession SubjectTeacher[]
+
+    // Classroom's class teacher
+    classRoom  ClassRoom[]
+    // Subjects taught by this teacher in different classes
+    subjects   SubjectClassTeacher[]
+}
+
+// Non Teaching staff
+model NonTeaching extends TimeStamps {
+    staff Staff   @relation(fields: [id], references: [schoolUserId])
+    id    Int     @unique
+
+    name  String
+    email String?
+    phone String
+
+    role  String
+}
+
+model Parent extends Entity, TimeStamps {
+    student   Student @relation(fields: [studentId], references: [id])
+    studentId Int
+    privilege String  @default('primary')
+    phone     String  @unique
+    email     String?
+}
+
+model ClassRoom extends Entity, TimeStamps {
+    title           String?
+    slug            String                @unique
+
+    classTeacher    Teacher               @relation(fields: [classTeacherId], references: [id])
+    classTeacherId  Int
+
+    // Class members
+    students        Student[]
+    // Class subject teachers
+    subjectTeachers SubjectClassTeacher[]
+    // Class timetable
+    timetable       ClassTimetable[]
+}
+
+// Class teacher's per subject
+model SubjectClassTeacher {
+    subject        Subject   @relation(fields: [subjectId], references: [subjectId])
+    subjectId      Int
+    subjectTeacher Teacher   @relation(fields: [teacherId], references: [id])
+    teacherId      Int
+    classRoom      ClassRoom @relation(fields: [classRoomId], references: [id])
+    classRoomId    Int
+
+    @@unique([subjectId, classRoomId, teacherId])
+}
+
+// Subject teachers
+model SubjectTeacher {
+    subject        Subject @relation(fields: [subjectId], references: [subjectId])
+    subjectId      Int
+    subjectTeacher Teacher @relation(fields: [teacherId], references: [id])
+    teacherId      Int
+
+    @@unique([subjectId, teacherId])
+}
+
+// Subjects taught
+model Subject {
+    subjectId            Int                   @unique
+    name                 String
+    school               School                @relation(fields: [schoolId], references: [id])
+    schoolId             Int
+
+    // Class subject teachers
+    classSubjectTeachers SubjectClassTeacher[]
+    // Subject teachers
+    teachers             SubjectTeacher[]
+
+    // @@allow('read', school.schoolUsers?[])
+}
+
+// Academic year's events
+model SchoolCalendar {
+    year   Int  @unique
+    events Json
+}
+
+// Class Timetable
+model ClassTimetable {
+    classRoom   ClassRoom @relation(fields: [classRoomId], references: [id])
+    classRoomId Int       @unique
+
+    slots       Json
+}
