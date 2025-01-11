@@ -13,6 +13,9 @@ import { Public } from 'src/lib/public.decorator';
 import { SignInDto } from './dto/signin.dto';
 import { Response, Request as ExpressRequest } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
+import { OtpRequestDto } from './dto/otp-request.dto';
+import { PasswordResetDto } from './dto/password-reset.dto';
 
 export const SESSION_KEY = 'session';
 
@@ -95,26 +98,26 @@ export class AuthController {
         errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
       }),
     )
-    publicOtpRequest: PublicOtpRequest,
+    publicOtpRequest: OtpRequestDto,
   ) {
     return await this.authService.requestOtpPublic(publicOtpRequest);
   }
 
-  @Post('request-otp/authenticated')
-  async requestOtpAuthenticated(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
-    authenticatedOtpRequest: AuthenticatedOtpRequest,
-    @Request() req: ExpressRequest,
-  ) {
-    return await this.authService.requestOtpAuthenticated(
-      authenticatedOtpRequest,
-      req.authentication?.principal!!,
-    );
-  }
+  // @Post('request-otp/authenticated')
+  // async requestOtpAuthenticated(
+  //   @Body(
+  //     new ValidationPipe({
+  //       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  //     }),
+  //   )
+  //   authenticatedOtpRequest: AuthenticatedOtpRequest,
+  //   @Request() req: ExpressRequest,
+  // ) {
+  //   return await this.authService.requestOtpAuthenticated(
+  //     authenticatedOtpRequest,
+  //     req.authentication?.principal!!,
+  //   );
+  // }
 
   @Public()
   @Post('reset-password')
