@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsUrl, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsStrongPassword, Length } from 'class-validator';
 
 export class CreateTenantDto {
   @IsNotEmpty()
@@ -17,4 +17,7 @@ export class CreateTenantDto {
 
   @IsNotEmpty()
   logo: string;
+
+  @IsStrongPassword()
+  password: string;
 }

@@ -23,8 +23,8 @@ export class ExcludeSensitiveDataInterceptor implements NestInterceptor {
 
   private excludePasswordDigest(data: any) {
     // Check if the object has the passwordDigest property
-    if (data && data.passwordDigest) {
-      const { passwordDigest, ...safeData } = data;
+    if (data.passwordDigest || data.password) {
+      const { passwordDigest, password, ...safeData } = data;
       return safeData;
     }
     return data;

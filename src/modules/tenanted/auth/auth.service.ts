@@ -26,7 +26,6 @@ export class AuthService {
     // Attempt to find tenant by username
     const _tenant = await this.tenantsService.find({
       username: tenant,
-      id: tenant,
     });
 
     if (!_tenant) {

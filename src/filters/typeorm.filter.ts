@@ -28,6 +28,6 @@ export class TypeOrmFilter implements ExceptionFilter {
         message = 'Sorry an internal server error occured';
     }
 
-    response.status(status).json({ error, message });
+    response.status(status).json({ error, message, statusCode: status });
   }
 }

@@ -18,4 +18,7 @@ export class Tenant extends AbstractEntity {
 
   @Column()
   logo: string;
+
+  @Column()
+  password: string;
 }

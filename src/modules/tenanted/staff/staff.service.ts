@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CreateStaffDto } from './dto/create-staff.dto';
 import { UpdateStaffDto } from './dto/update-staff.dto';
+import { CreateTeacherDto } from './dto/create-teacher-dto';
 
 @Injectable()
 export class StaffService {
-  create(createStaffDto: CreateStaffDto) {
+  createTeacher(createTeacherDto: CreateTeacherDto) {
     return 'This action adds a new staff';
   }
 
-  findAll() {
+  findAllTeachers() {
     return `This action returns all staff`;
   }
 
-  findOne(id: number) {
+  findOneTeacher(id: string) {
     return `This action returns a #${id} staff`;
   }
 
-  update(id: number, updateStaffDto: UpdateStaffDto) {
+  updateTeacher(id: string, updateStaffDto: UpdateStaffDto) {
     return `This action updates a #${id} staff`;
   }
 
-  remove(id: number) {
+  removeTeacher(id: string) {
     return `This action removes a #${id} staff`;
   }
 }
