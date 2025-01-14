@@ -1,6 +1,12 @@
-export class OneTimePassword {
-    id        String    
-    user      User      
-    value     String
-    createdAt DateTime
-  }
+import { AbstractEntity } from 'src/lib/abstract.entity';
+import { Entity, JoinColumn, OneToOne } from 'typeorm';
+import { User } from '../user.entity';
+
+@Entity({ name: 'one_time_passwords' })
+export class OTP extends AbstractEntity {
+  @OneToOne(() => User)
+  @JoinColumn()
+  user: User;
+
+  value: string;
+}

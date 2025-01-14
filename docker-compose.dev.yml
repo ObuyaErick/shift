@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    build:
+      context: infra/postgres
+      dockerfile: Dockerfile
+    container_name: dev_postgres_shift
+    environment:
+      POSTGRES_DB: db_shift
+      POSTGRES_USER: user_shift
+      POSTGRES_PASSWORD: password_shift
+    ports:
+      - '5433:5432'
+    # volumes:
+    #   - postgres-data:/var/lib/postgresql/data
+    networks:
+      - dev_shift_network
+
+networks:
+  dev_shift_network: {}
+# volumes:
+#   postgres-data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./infrastructure_services/db/postgres/data

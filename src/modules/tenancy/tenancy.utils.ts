@@ -1,9 +1,10 @@
-import { tenantedDatasourceOptions } from 'src/tenants-orm.config';
+import { tenantedDatasourceOptions } from 'src/config/tenants-orm.config';
 import { Connection, createConnection, getConnectionManager } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 export function getTenantConnection(tenantId: string): Promise<Connection> {
-  const connectionName = `tenant_${tenantId}`;
+  const _tenantId = tenantId.replaceAll('-', '_');
+  const connectionName = `tenant_${_tenantId}`;
   const connectionManager = getConnectionManager();
 
   if (connectionManager.has(connectionName)) {

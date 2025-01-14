@@ -1,0 +1,2 @@
+GRANT ALL PRIVILEGES ON *.* TO 'sahihi_mysql_user'@'%';
+FLUSH PRIVILEGES;

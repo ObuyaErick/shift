@@ -9,15 +9,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Public } from 'src/lib/public.decorator';
 import { SignInDto } from './dto/signin.dto';
 import { Response, Request as ExpressRequest } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
-import { OtpRequestDto } from './dto/otp-request.dto';
-import { PasswordResetDto } from './dto/password-reset.dto';
-
-export const SESSION_KEY = 'session';
+import { SESSION_KEY } from 'src/lib/keys';
 
 @Controller('api/auth')
 export class AuthController {
@@ -27,7 +22,6 @@ export class AuthController {
   ) {}
 
   @Post('signin')
-  @Public()
   async signIn(
     @Body(
       new ValidationPipe({
@@ -59,7 +53,7 @@ export class AuthController {
     return {
       principal: req.authentication?.principal,
       authorities: req.authentication?.authorities,
-      initials: req.authentication?.initials,
+      tenant: req.authentication?.tenant,
     };
   }
 
@@ -77,31 +71,31 @@ export class AuthController {
     };
   }
 
-  @Public()
-  @Post('request-password-reset')
-  async passwordResetRequest(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
-    passwordResetRequestDto: PasswordResetRequestDto,
-  ) {
-    return await this.authService.passwordResetRequest(passwordResetRequestDto);
-  }
+  // @Public()
+  // @Post('request-password-reset')
+  // async passwordResetRequest(
+  //   @Body(
+  //     new ValidationPipe({
+  //       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  //     }),
+  //   )
+  //   passwordResetRequestDto: PasswordResetRequestDto,
+  // ) {
+  //   return await this.authService.passwordResetRequest(passwordResetRequestDto);
+  // }
 
-  @Post('request-otp/public')
-  @Public()
-  async requestOtpPublic(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
-    publicOtpRequest: OtpRequestDto,
-  ) {
-    return await this.authService.requestOtpPublic(publicOtpRequest);
-  }
+  // @Post('request-otp/public')
+  // @Public()
+  // async requestOtpPublic(
+  //   @Body(
+  //     new ValidationPipe({
+  //       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  //     }),
+  //   )
+  //   publicOtpRequest: OtpRequestDto,
+  // ) {
+  //   return await this.authService.requestOtpPublic(publicOtpRequest);
+  // }
 
   // @Post('request-otp/authenticated')
   // async requestOtpAuthenticated(
@@ -119,16 +113,16 @@ export class AuthController {
   //   );
   // }
 
-  @Public()
-  @Post('reset-password')
-  async passwordReset(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
-    passwordResetDto: PasswordResetDto,
-  ) {
-    return await this.authService.passwordReset(passwordResetDto);
-  }
+  // @Public()
+  // @Post('reset-password')
+  // async passwordReset(
+  //   @Body(
+  //     new ValidationPipe({
+  //       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  //     }),
+  //   )
+  //   passwordResetDto: PasswordResetDto,
+  // ) {
+  //   return await this.authService.passwordReset(passwordResetDto);
+  // }
 }

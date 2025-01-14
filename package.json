@@ -17,7 +17,18 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "yarn ts-node -P ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "typeorm:public": "yarn typeorm -d ./src/config/orm.config.ts",
+    "typeorm:tenanted": "yarn typeorm -d ./src/config/tenants-orm.config.ts",
+    "migration:generate:public": "yarn typeorm:public migration:generate",
+    "migration:create:public": "yarn typeorm:public migration:create",
+    "migration:run:public": "yarn typeorm:public migration:run",
+    "migration:revert:public": "yarn typeorm:public migration:revert",
+    "migration:generate:tenanted": "yarn typeorm:tenanted migration:generate",
+    "migration:create:tenanted": "yarn typeorm:tenanted migration:create",
+    "migration:run:tenanted": "yarn typeorm:tenanted migration:run",
+    "migration:revert:tenanted": "yarn typeorm:tenanted migration:revert"
   },
   "dependencies": {
     "@casl/ability": "^6.7.2",

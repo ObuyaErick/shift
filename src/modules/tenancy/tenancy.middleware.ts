@@ -4,41 +4,83 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { Repository } from 'typeorm';
-import { Tenant } from '../public/tenants/entities/tenant.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { plainToInstance } from 'class-transformer';
-import { XTenantIdDto } from './tenancy.dto';
-import { validateSync } from 'class-validator';
-
-const TENANT_HEADER = 'x-tenant-id';
+import { TenantsService } from '../public/tenants/tenants.service';
+import { Authentication, JWTSessionPayload } from 'src/lib/types';
+import { SESSION_KEY } from 'src/lib/keys';
+import { getTenantConnection } from './tenancy.utils';
+import { User } from '../tenanted/user.entity';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class TenancyMiddleware implements NestMiddleware {
   constructor(
-    @InjectRepository(Tenant)
-    private readonly tenantRepository: Repository<Tenant>,
+    private readonly tenantsService: TenantsService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async use(req: Request, _res: Response, next: NextFunction) {
-    const xTenantId = req.headers[TENANT_HEADER] as string;
-
-    if (xTenantId) {
-      const tenantDto = plainToInstance(XTenantIdDto, { value: xTenantId });
-      const errors = validateSync(tenantDto);
-
-      if (
-        errors.length < 1 &&
-        (await this.tenantRepository.existsBy({ id: xTenantId }))
-      ) {
-        req.tenantId = xTenantId?.toString() || null;
-      } else {
-        throw new UnauthorizedException('Invalid authentication details');
-      }
-    } else {
-      throw new UnauthorizedException('Invalid authentication details');
-    }
+    await this.validateRequest(req);
 
     next();
+  }
+
+  async validateRequest(request: Request) {
+    const token = this.extractTokenFromHeaderOrCookie(request);
+
+    if (!token) {
+      throw new UnauthorizedException(
+        'Authentication details not found, you are not signed in.',
+      );
+    }
+
+    // Extract the payload from the jwt
+    const payload = await this.jwtService
+      .verifyAsync<JWTSessionPayload>(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      })
+      .catch((_err) => {
+        throw new UnauthorizedException(
+          'Invalid or expired authentication details',
+        );
+      });
+
+    const tenant = await this.tenantsService.find({
+      id: payload.tenant.id,
+    });
+    const user = await getTenantConnection(tenant.id)
+      .then((connection) =>
+        connection.getRepository(User).findOneByOrFail({ id: payload.sub }),
+      )
+      .catch((_error) => {
+        throw new UnauthorizedException(
+          'User with the provided authentication details could not be verified',
+        );
+      });
+
+    // Attach tenant id
+    request.tenant = tenant;
+
+    // Attaching authtentication context (user details) to the request object
+    request.authentication = Authentication.build()
+      .addAuthorities()
+      .setPrincipal({
+        id: user.id,
+        username: user.username,
+      })
+      .setTenant(tenant);
+
+    return true;
+  }
+
+  // Extract the 'Bearer' token from http request headers
+  private extractTokenFromHeaderOrCookie(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer'
+      ? token
+      : request.cookies
+        ? request.cookies[SESSION_KEY]
+        : undefined;
   }
 }

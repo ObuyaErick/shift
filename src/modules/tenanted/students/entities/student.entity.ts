@@ -1,5 +1,16 @@
 import { AbstractEntity } from 'src/lib/abstract.entity';
-import { Column, Entity } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
+import { User } from '../../user.entity';
+import { Classroom } from '../../classrooms/entities/classroom.entity';
+import { Parent } from '../../parents/entities/parent.entity';
 
 @Entity({ name: 'students' })
 export class Student extends AbstractEntity {
@@ -17,4 +28,16 @@ export class Student extends AbstractEntity {
 
   @Column()
   dateOfBirth: string;
+
+  @OneToOne(() => User)
+  @JoinColumn()
+  user: User;
+
+  @ManyToOne(() => Classroom, (classroom) => classroom.students)
+  @JoinColumn()
+  classroom: Classroom;
+
+  @ManyToMany(() => Parent, (parent) => parent.students)
+  @JoinTable()
+  parents: Parent[];
 }

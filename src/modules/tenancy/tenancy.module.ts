@@ -1,27 +1,23 @@
-import {
-  Global,
-  InternalServerErrorException,
-  Module,
-  Scope,
-} from '@nestjs/common';
+import { ForbiddenException, Global, Module, Scope } from '@nestjs/common';
 import { TENANT_CONNECTION } from './tenancy.symbols';
 import { Request as ExpressRequest } from 'express';
 import { getTenantConnection } from './tenancy.utils';
 import { REQUEST } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 
 const connectionFactory = {
   provide: TENANT_CONNECTION,
   scope: Scope.REQUEST,
-  useFactory: (request: ExpressRequest) => {
-    const { tenantId } = request;
+  useFactory: (request: ExpressRequest, configService: ConfigService) => {
+    const { tenant } = request;
 
-    if (tenantId) {
-      return getTenantConnection(tenantId.replaceAll('-', '_'));
+    if (tenant) {
+      return getTenantConnection(tenant.id);
     }
 
-    throw new InternalServerErrorException();
+    throw new ForbiddenException('You are not logged in.');
   },
-  inject: [REQUEST],
+  inject: [REQUEST, ConfigService],
 };
 
 @Global()
