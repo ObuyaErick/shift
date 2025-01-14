@@ -5,6 +5,8 @@ import * as cookieParser from 'cookie-parser';
 import { getTenantConnection } from './modules/tenancy/tenancy.utils';
 import { Tenant } from './modules/public/tenants/entities/tenant.entity';
 import { DataSource } from 'typeorm';
+import { TypeOrmFilter } from './filters/typeorm.filter';
+import { ExcludeSensitiveDataInterceptor } from './interceptors/interceptor.sensitive-data';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -54,6 +56,12 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+
+  // A global resource not found exception filter
+  app.useGlobalFilters(new TypeOrmFilter());
+
+  // Glodal sensitive data interceptor
+  app.useGlobalInterceptors(new ExcludeSensitiveDataInterceptor());
 
   await app.listen(port, '0.0.0.0');
 }
