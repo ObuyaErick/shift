@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
 import { UpdateClassroomDto } from './dto/update-classroom.dto';
+import { Classroom } from './entities/classroom.entity';
+import { Connection, Repository } from 'typeorm';
+import { TENANT_CONNECTION } from 'src/modules/tenancy/tenancy.symbols';
+import { Teacher } from '../staff/entities/teacher.entity';
+import { Crud } from 'src/lib/crud';
+import { StaffService } from '../staff/staff.service';
 
 @Injectable()
 export class ClassroomsService {
-  create(createClassroomDto: CreateClassroomDto) {
-    return 'This action adds a new classroom';
+  private readonly classroomsRepository: Repository<Classroom>;
+
+  constructor(
+    @Inject(TENANT_CONNECTION) private readonly tenantConnection: Connection,
+    private readonly staffService: StaffService,
+  ) {
+    this.classroomsRepository = tenantConnection.getRepository(Classroom);
+  }
+
+  async create(createClassroomDto: CreateClassroomDto) {
+    const { classTeacherId, ...createData } = createClassroomDto;
+    let classTeacher: Teacher | null = null;
+    if (classTeacherId) {
+      classTeacher = await this.staffService
+        .findOneTeacher(classTeacherId)
+        .catch(() => null);
+    }
+
+    return this.classroomsRepository.save({ ...createData, classTeacher });
   }
 
   findAll() {
-    return `This action returns all classrooms`;
+    return this.classroomsRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} classroom`;
+  findOne(id: string) {
+    return Crud.find(this.classroomsRepository, { id });
   }
 
-  update(id: number, updateClassroomDto: UpdateClassroomDto) {
-    return `This action updates a #${id} classroom`;
+  async update(id: string, updateClassroomDto: UpdateClassroomDto) {
+    await this.findOne(id);
+    return this.classroomsRepository.update({ id }, updateClassroomDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} classroom`;
+  async remove(id: string) {
+    return this.classroomsRepository.remove(await this.findOne(id));
   }
 }

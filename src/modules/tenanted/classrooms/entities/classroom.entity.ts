@@ -1,9 +1,17 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  Unique,
+} from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
 import { AbstractEntity } from 'src/lib/abstract.entity';
 import { Teacher } from '../../staff/entities/teacher.entity';
 
 @Entity({ name: 'classrooms' })
+@Unique(['slug'])
 export class Classroom extends AbstractEntity {
   @Column()
   title: string;
@@ -14,7 +22,7 @@ export class Classroom extends AbstractEntity {
   @OneToMany(() => Student, (student) => student.classroom)
   students: Student[];
 
-  @OneToOne(() => Teacher)
+  @OneToOne(() => Teacher, { nullable: true })
   @JoinColumn()
-  classTeacher: Teacher;
+  classTeacher: Teacher | null;
 }

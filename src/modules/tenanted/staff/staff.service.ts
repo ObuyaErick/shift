@@ -1,26 +1,52 @@
-import { Injectable } from '@nestjs/common';
-import { UpdateStaffDto } from './dto/update-staff.dto';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
+import { Connection, Repository } from 'typeorm';
+import { Staff } from './entities/staff.entity';
+import { Teacher } from './entities/teacher.entity';
+import { TENANT_CONNECTION } from 'src/modules/tenancy/tenancy.symbols';
+import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { Crud } from 'src/lib/crud';
 
 @Injectable()
 export class StaffService {
-  createTeacher(createTeacherDto: CreateTeacherDto) {
-    return 'This action adds a new staff';
+  private readonly staffRepository: Repository<Staff>;
+  private readonly teacherRepository: Repository<Teacher>;
+
+  constructor(
+    @Inject(TENANT_CONNECTION) private readonly tenantConnection: Connection,
+  ) {
+    this.staffRepository = tenantConnection.getRepository(Staff);
+    this.teacherRepository = tenantConnection.getRepository(Teacher);
+  }
+
+  async createTeacher(createTeacherDto: CreateTeacherDto) {
+    const entityManager = this.tenantConnection.createEntityManager();
+    return entityManager.transaction(async (manager) => {
+      const staff = await manager.save(
+        Staff,
+        manager.create(Staff, { role: 'teacher' }),
+      );
+      let teacher = manager.create(Teacher, { ...createTeacherDto, staff });
+      teacher = await manager.save(Teacher, teacher);
+
+      return teacher;
+    });
   }
 
   findAllTeachers() {
-    return `This action returns all staff`;
+    return this.teacherRepository.find();
   }
 
   findOneTeacher(id: string) {
-    return `This action returns a #${id} staff`;
+    return Crud.find(this.teacherRepository, { id });
   }
 
-  updateTeacher(id: string, updateStaffDto: UpdateStaffDto) {
-    return `This action updates a #${id} staff`;
+  async updateTeacher(id: string, updateTeacherDto: UpdateTeacherDto) {
+    await this.findOneTeacher(id);
+    return this.teacherRepository.update({ id }, updateTeacherDto);
   }
 
-  removeTeacher(id: string) {
-    return `This action removes a #${id} staff`;
+  async removeTeacher(id: string) {
+    return this.teacherRepository.remove(await this.findOneTeacher(id));
   }
 }

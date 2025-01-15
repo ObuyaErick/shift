@@ -5,6 +5,7 @@ import { Tenant } from './entities/tenant.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
 import { PasswordService } from 'src/lib/password.service';
+import { Crud } from 'src/lib/crud';
 
 @Injectable()
 export class TenantsService {
@@ -36,6 +37,6 @@ export class TenantsService {
   }
 
   find(where: FindOptionsWhere<Tenant>): Promise<Tenant> {
-    return this.tenantsRepository.findOneByOrFail(where);
+    return Crud.find(this.tenantsRepository, where);
   }
 }
