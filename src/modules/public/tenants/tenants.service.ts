@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTenantDto } from './dto/create-tenant.dto';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { Tenant } from './entities/tenant.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
 import { PasswordService } from 'src/lib/password.service';
 import { Crud } from 'src/lib/crud';
+import { Tenant } from './entities/tenant.entity';
+import { CreateTenantDto } from './dto/create-tenant.dto';
 
 @Injectable()
 export class TenantsService {

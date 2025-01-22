@@ -2,8 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
-import { getTenantConnection } from './modules/tenancy/tenancy.utils';
-import { Tenant } from './modules/public/tenants/entities/tenant.entity';
 import { DataSource } from 'typeorm';
 import { TypeOrmFilter } from './filters/typeorm.filter';
 import { ExcludeSensitiveDataInterceptor } from './interceptors/interceptor.sensitive-data';
@@ -19,8 +17,6 @@ async function bootstrap() {
   if (await publicDataSource.showMigrations()) {
     await publicDataSource.runMigrations();
   }
-
-  console.log('Pending Migrations: ', await publicDataSource.showMigrations());
 
   // // Fetch all tenants
   // const tenants = await publicDataSource.getRepository(Tenant).find();
@@ -47,14 +43,17 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const port = configService.get<number>('PORT', { infer: true });
-  const frontEndHost = configService.get<string>('FRONTEND_HOST');
 
+  // Configure cross origin resource sharing
   app.enableCors({
-    origin: frontEndHost,
+    origin: String(configService.get('CORS_HOSTS'))
+      .split(',')
+      .map((h) => h.trim()),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
+  // Support for cookies
   app.use(cookieParser());
 
   // A global resource not found exception filter

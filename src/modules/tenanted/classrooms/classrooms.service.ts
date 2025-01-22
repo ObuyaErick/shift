@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
-import { UpdateClassroomDto } from './dto/update-classroom.dto';
+import {
+  AssignClassTeacherDto,
+  UpdateClassroomDto,
+} from './dto/update-classroom.dto';
 import { Classroom } from './entities/classroom.entity';
 import { Connection, Repository } from 'typeorm';
 import { TENANT_CONNECTION } from 'src/modules/tenancy/tenancy.symbols';
@@ -42,6 +45,15 @@ export class ClassroomsService {
   async update(id: string, updateClassroomDto: UpdateClassroomDto) {
     await this.findOne(id);
     return this.classroomsRepository.update({ id }, updateClassroomDto);
+  }
+
+  async assignClassTeacher(assignClassTeacherDto: AssignClassTeacherDto) {
+    const classroom = await this.findOne(assignClassTeacherDto.classroomId);
+    const teacher = await this.staffService.findOneTeacher(
+      assignClassTeacherDto.classTeacherId,
+    );
+    classroom.classTeacher = teacher;
+    return await this.classroomsRepository.save(classroom);
   }
 
   async remove(id: string) {

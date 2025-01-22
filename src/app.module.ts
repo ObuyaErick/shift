@@ -48,10 +48,9 @@ import { SubjectsController } from './modules/tenanted/subjects/subjects.control
         MAIL_PORT: Joi.number().port().default(465),
         MAIL_USER: Joi.string().required(),
         MAIL_PASSWORD: Joi.string().required(),
-        MAIL_FROM: Joi.string().default(
-          '"Support Team" <support@petrolet.com>',
-        ),
+        MAIL_FROM: Joi.string().default('"Support Team" <noreply@example.com>'),
         //.default('noreply@example.com'),
+        CORS_HOSTS: Joi.string(),
       }),
       validationOptions: {
         allowUnknown: true,

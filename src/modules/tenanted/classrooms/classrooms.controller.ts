@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { ClassroomsService } from './classrooms.service';
 import { CreateClassroomDto } from './dto/create-classroom.dto';
-import { UpdateClassroomDto } from './dto/update-classroom.dto';
+import {
+  AssignClassTeacherDto,
+  UpdateClassroomDto,
+} from './dto/update-classroom.dto';
 
 @Controller('classrooms')
 export class ClassroomsController {
@@ -18,6 +21,11 @@ export class ClassroomsController {
   @Post()
   create(@Body() createClassroomDto: CreateClassroomDto) {
     return this.classroomsService.create(createClassroomDto);
+  }
+
+  @Post()
+  assignClassTeacher(@Body() classTeacherAssignmentDto: AssignClassTeacherDto) {
+    return this.classroomsService.assignClassTeacher(classTeacherAssignmentDto);
   }
 
   @Get()
