@@ -15,7 +15,7 @@ async function bootstrap() {
 
   // Run public migrations if one is pending
   if (await publicDataSource.showMigrations()) {
-    await publicDataSource.runMigrations();
+    // await publicDataSource.runMigrations();
   }
 
   // // Fetch all tenants

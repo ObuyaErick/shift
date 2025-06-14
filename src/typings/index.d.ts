@@ -6,7 +6,7 @@ declare global {
     interface Request {
       tenant?: Tenant | null;
       session?: JWTSessionPayload | null;
-      authentication?: Authentication;
+      authentication?: Authentication | null;
     }
   }
 }

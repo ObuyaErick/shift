@@ -1,10 +1,10 @@
 # Postgres Container
-FROM postgres:latest
+FROM postgres:17
 
 # Set environment variables
-ENV POSTGRES_DB db_multitenant
-ENV POSTGRES_USER user_multitenant
-ENV POSTGRES_PASSWORD password_multitenant
+ENV POSTGRES_DB postgres
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD postgres
 
 # Copy the custom entrypoint script into the container
 # COPY init.sql /docker-entrypoint-initdb.d/init.sql

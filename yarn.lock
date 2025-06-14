@@ -1188,6 +1188,11 @@
   dependencies:
     "@types/mjml-core" "*"
 
+"@types/mustache@^4.2.5":
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-4.2.5.tgz#9129f0d6857f976e00e171bbb3460e4b702f84ef"
+  integrity sha512-PLwiVvTBg59tGFL/8VpcGvqOu3L4OuveNvPi0EYbWchRdEVP++yRUXJPFl+CApKEq13017/4Nf7aQ5lTtHUNsA==
+
 "@types/node@*":
   version "22.10.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.10.5.tgz#95af89a3fb74a2bb41ef9927f206e6472026e48b"

@@ -24,6 +24,8 @@ import { StudentsController } from './modules/tenanted/students/students.control
 import { StaffController } from './modules/tenanted/staff/staff.controller';
 import { ParentsController } from './modules/tenanted/parents/parents.controller';
 import { SubjectsController } from './modules/tenanted/subjects/subjects.controller';
+import { SubscriptionsModule } from './modules/public/subscriptions/subscriptions.module';
+import { AccessPoliciesModule } from './access-policies/access-policies.module';
 
 @Module({
   imports: [
@@ -77,6 +79,8 @@ import { SubjectsController } from './modules/tenanted/subjects/subjects.control
     ClassroomsModule,
     SubjectsModule,
     MailModule,
+    SubscriptionsModule,
+    AccessPoliciesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
