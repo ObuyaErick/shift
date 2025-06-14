@@ -34,7 +34,7 @@ import { AccessPoliciesModule } from './access-policies/access-policies.module';
     TenancyModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env', '.development.env'],
+      envFilePath: ['.env', '.env.local'],
       cache: true,
       expandVariables: true,
       validationSchema: Joi.object({

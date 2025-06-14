@@ -14,7 +14,7 @@ import { Response, Request as ExpressRequest } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { SESSION_KEY } from 'src/lib/keys';
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

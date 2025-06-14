@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
-import { PasswordService } from 'src/lib/password.service';
 import { Crud } from 'src/lib/crud';
 import { Tenant } from './entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
@@ -14,10 +13,7 @@ export class TenantsService {
     private readonly tenantsRepository: Repository<Tenant>,
   ) {}
   async create(createTenantDto: CreateTenantDto): Promise<Tenant> {
-    const tenant = await this.tenantsRepository.save({
-      ...createTenantDto,
-      password: PasswordService.hashedPassword(createTenantDto.password),
-    });
+    const tenant = await this.tenantsRepository.save(createTenantDto);
 
     const sanitizedTenantId = tenant.id.replaceAll('-', '_').trim();
     const schemaName = `tenant_${sanitizedTenantId}`;

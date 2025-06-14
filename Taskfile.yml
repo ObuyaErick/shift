@@ -30,3 +30,8 @@ tasks:
     desc: "Start the server"
     cmds:
       - yarn run start:dev
+
+  "migrate:public":
+    desc: "Run public schema migrations"
+    cmds:
+      - yarn migration:run:public

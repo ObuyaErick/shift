@@ -26,6 +26,6 @@ export class Subscription extends AbstractEntity {
   tenant: Tenant;
 
   @ManyToMany(() => Feature, (feature) => feature.subscriptions)
-  @JoinTable({ name: 'subscription_features' })
+  @JoinTable({ name: 'feature_subscriptions' })
   features: Feature[];
 }

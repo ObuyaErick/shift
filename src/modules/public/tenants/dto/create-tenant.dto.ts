@@ -1,21 +1,28 @@
-import { IsEmail, IsNotEmpty, IsStrongPassword, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsStrongPassword,
+  Min,
+} from 'class-validator';
 
 export class CreateTenantDto {
   @IsNotEmpty()
   name: string;
 
   @IsNotEmpty()
-  @Length(4)
+  @Min(4)
   username: string;
 
   @IsNotEmpty()
-  @IsEmail()
+  @IsEmail(undefined, { message: 'valid email is required' })
   email: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'an address is required' })
   address: string;
 
   @IsNotEmpty()
+  @IsOptional()
   logo: string;
 
   @IsStrongPassword()
