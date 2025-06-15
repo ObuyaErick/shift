@@ -8,18 +8,18 @@ import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dto/signin.dto';
 import { MailService } from 'src/mail/mail.service';
 import { PasswordService } from 'src/passwords/password.service';
-import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
-import { User } from 'src/modules/tenanted/user.entity';
 import { TenantsService } from '../../public/tenants/tenants.service';
 import { JWTSessionPayload } from 'src/auth.types';
+import { getTenantDatasource } from 'src/modules/tenancy/tenancy.datasource';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
-    private mailService: MailService,
-    private configService: ConfigService,
-    private tenantsService: TenantsService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService,
+    private readonly tenantsService: TenantsService,
   ) {}
 
   async signIn({ username, password, tenant }: SignInDto) {
@@ -33,9 +33,9 @@ export class AuthService {
     }
 
     // Find user
-    const _user = await getTenantConnection(_tenant.id).then((connection) => {
-      return connection.getRepository(User).findOneBy({ username });
-    });
+    const _user = await getTenantDatasource(_tenant.id).then((ds) =>
+      ds.getRepository(User).findOne({ where: { username } }),
+    );
 
     if (!_user) {
       throw new NotFoundException('User not found');

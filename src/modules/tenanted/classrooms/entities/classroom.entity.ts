@@ -19,6 +19,9 @@ export class Classroom extends AbstractEntity {
   @Column()
   slug: string;
 
+  @Column()
+  gradeLevel: string;
+
   @OneToMany(() => Student, (student) => student.classroom)
   students: Student[];
 

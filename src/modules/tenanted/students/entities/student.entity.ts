@@ -8,9 +8,9 @@ import {
   ManyToOne,
   OneToOne,
 } from 'typeorm';
-import { User } from '../../user.entity';
 import { Classroom } from '../../classrooms/entities/classroom.entity';
 import { Parent } from '../../parents/entities/parent.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'students' })
 export class Student extends AbstractEntity {

@@ -21,13 +21,14 @@
     "typeorm": "yarn ts-node -P ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "typeorm:public": "yarn typeorm -d ./src/config/orm.config.ts",
     "typeorm:tenanted": "yarn typeorm -d ./src/config/tenants-orm.config.ts",
+    "typeorm:dev:tenanted": "yarn typeorm -d ./src/config/postgres-tenancy-migrations.orm.config.ts",
     "migration:generate:public": "yarn typeorm:public migration:generate",
     "migration:create:public": "yarn typeorm:public migration:create",
     "migration:run:public": "yarn typeorm:public migration:run",
     "migration:revert:public": "yarn typeorm:public migration:revert",
-    "migration:generate:tenanted": "yarn typeorm:tenanted migration:generate",
-    "migration:create:tenanted": "yarn typeorm:tenanted migration:create",
-    "migration:run:tenanted": "yarn typeorm:tenanted migration:run",
+    "migration:generate:tenanted": "yarn typeorm:dev:tenanted migration:generate",
+    "migration:create:tenanted": "yarn typeorm:dev:tenanted migration:create",
+    "migration:run:tenanted": "yarn typeorm:dev:tenanted migration:run",
     "migration:revert:tenanted": "yarn typeorm:tenanted migration:revert"
   },
   "dependencies": {

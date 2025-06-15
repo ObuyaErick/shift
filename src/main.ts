@@ -13,6 +13,8 @@ async function bootstrap() {
   // Public schema datasource
   const publicDataSource = app.get(DataSource);
 
+  // await publicDataSource.query(`CREATE SCHEMA IF NOT EXISTS tenancy_dev_migrations`);
+
   // Run public migrations if one is pending
   if (await publicDataSource.showMigrations()) {
     // await publicDataSource.runMigrations();

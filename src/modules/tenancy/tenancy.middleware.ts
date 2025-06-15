@@ -7,10 +7,10 @@ import { NextFunction, Request, Response } from 'express';
 import { TenantsService } from '../public/tenants/tenants.service';
 import { Authentication, JWTSessionPayload } from 'src/auth.types';
 import { SESSION_KEY } from 'src/auth.types';
-import { getTenantConnection } from './tenancy.utils';
-import { User } from '../tenanted/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { getTenantDatasource } from './tenancy.datasource';
+import { User } from '../tenanted/users/entities/user.entity';
 
 @Injectable()
 export class TenancyMiddleware implements NestMiddleware {
@@ -49,7 +49,7 @@ export class TenancyMiddleware implements NestMiddleware {
     const tenant = await this.tenantsService.find({
       id: payload.tenant.id,
     });
-    const user = await getTenantConnection(tenant.id)
+    const user = await getTenantDatasource(tenant.id)
       .then((connection) =>
         connection.getRepository(User).findOneByOrFail({ id: payload.sub }),
       )

@@ -26,6 +26,7 @@ import { ParentsController } from './modules/tenanted/parents/parents.controller
 import { SubjectsController } from './modules/tenanted/subjects/subjects.controller';
 import { SubscriptionsModule } from './modules/public/subscriptions/subscriptions.module';
 import { AccessPoliciesModule } from './access-policies/access-policies.module';
+import { UsersModule } from './modules/tenanted/users/users.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { AccessPoliciesModule } from './access-policies/access-policies.module';
     MailModule,
     SubscriptionsModule,
     AccessPoliciesModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

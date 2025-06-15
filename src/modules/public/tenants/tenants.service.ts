@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
 import { Tenant } from './entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { Crud } from 'src/db/crud';
+import {
+  getTenantDatasource,
+  tenantSchemaName,
+} from 'src/modules/tenancy/tenancy.datasource';
 
 @Injectable()
 export class TenantsService {
@@ -15,15 +18,13 @@ export class TenantsService {
   async create(createTenantDto: CreateTenantDto): Promise<Tenant> {
     const tenant = await this.tenantsRepository.save(createTenantDto);
 
-    const sanitizedTenantId = tenant.id.replaceAll('-', '_').trim();
-    const schemaName = `tenant_${sanitizedTenantId}`;
+    const schemaName = tenantSchemaName(tenant.id);
 
-    const tenantConnection = await getTenantConnection(tenant.id);
-    tenantConnection.transaction;
+    const tenantDatasource = await getTenantDatasource(tenant.id);
 
-    await tenantConnection.query(`CREATE SCHEMA IF NOT EXISTS ${schemaName}`);
+    await tenantDatasource.query(`CREATE SCHEMA IF NOT EXISTS ${schemaName}`);
 
-    await tenantConnection.runMigrations();
+    await tenantDatasource.runMigrations();
 
     return tenant;
   }
