@@ -1,7 +1,7 @@
 import { Column, Entity, OneToOne } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { SupportStaff } from './support-staff.entity';
-import { AbstractEntity } from 'src/lib/abstract.entity';
+import { AbstractEntity } from 'src/db/abstract.entity';
 
 // export enum StaffRoles {
 //   Principal = 'Principal',

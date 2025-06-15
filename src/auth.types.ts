@@ -1,25 +1,7 @@
 import { Expose } from 'class-transformer';
-import { Tenant } from 'src/modules/public/tenants/entities/tenant.entity';
+import { Tenant } from './modules/public/tenants/entities/tenant.entity';
 
-const days = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-] as const;
-
-type Weekday = (typeof days)[number];
-
-type TimetableSlot = {
-  start: number;
-  end: number;
-  activity?: string;
-};
-
-export type ClassTimetable = Record<Weekday, TimetableSlot[]>;
+export const SESSION_KEY = 'session' as const;
 
 export interface JWTSessionPayload {
   sub: string;

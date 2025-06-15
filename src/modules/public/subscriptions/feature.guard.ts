@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { every } from 'lodash';
 import { Observable } from 'rxjs';
-import { REQUIRED_SUBSCRIPTION_FEATURES_KEY } from 'src/lib/decorators/required-features.decorator';
+import { REQUIRED_SUBSCRIPTION_FEATURES_KEY } from 'src/decorators/required-features.decorator';
 
 @Injectable()
 export class FeatureGuard implements CanActivate {

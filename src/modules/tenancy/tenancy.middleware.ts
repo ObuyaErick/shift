@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { TenantsService } from '../public/tenants/tenants.service';
-import { Authentication, JWTSessionPayload } from 'src/lib/types';
-import { SESSION_KEY } from 'src/lib/keys';
+import { Authentication, JWTSessionPayload } from 'src/auth.types';
+import { SESSION_KEY } from 'src/auth.types';
 import { getTenantConnection } from './tenancy.utils';
 import { User } from '../tenanted/user.entity';
 import { ConfigService } from '@nestjs/config';

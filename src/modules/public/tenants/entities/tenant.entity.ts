@@ -1,7 +1,7 @@
-import { AbstractEntity } from 'src/lib/abstract.entity';
+import { AbstractEntity } from 'src/db/abstract.entity';
 import { BeforeInsert, Column, Entity, OneToOne, Unique } from 'typeorm';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';
-import { PasswordService } from 'src/lib/password.service';
+import { PasswordService } from 'src/passwords/password.service';
 
 @Entity({ name: 'tenants' })
 @Unique(['username', 'email'])

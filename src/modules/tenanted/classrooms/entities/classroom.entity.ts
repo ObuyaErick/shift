@@ -7,7 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
-import { AbstractEntity } from 'src/lib/abstract.entity';
+import { AbstractEntity } from 'src/db/abstract.entity';
 import { Teacher } from '../../staff/entities/teacher.entity';
 
 @Entity({ name: 'classrooms' })

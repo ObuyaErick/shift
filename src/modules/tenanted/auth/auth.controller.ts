@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin.dto';
 import { Response, Request as ExpressRequest } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { SESSION_KEY } from 'src/lib/keys';
+import { SESSION_KEY } from 'src/auth.types';
 
 @Controller('auth')
 export class AuthController {

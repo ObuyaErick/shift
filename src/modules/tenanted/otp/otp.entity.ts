@@ -1,4 +1,4 @@
-import { AbstractEntity } from 'src/lib/abstract.entity';
+import { AbstractEntity } from 'src/db/abstract.entity';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
 import { User } from '../user.entity';
 

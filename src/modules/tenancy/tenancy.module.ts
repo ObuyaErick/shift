@@ -1,17 +1,17 @@
 import { ForbiddenException, Global, Module, Scope } from '@nestjs/common';
-import { TENANT_CONNECTION } from './tenancy.symbols';
+import { TENANT_DATASOURCE } from './tenancy.symbols';
 import { Request as ExpressRequest } from 'express';
-import { getTenantConnection } from './tenancy.utils';
 import { REQUEST } from '@nestjs/core';
+import { getTenantDatasource } from './tenancy.datasource';
 
 const connectionFactory = {
-  provide: TENANT_CONNECTION,
+  provide: TENANT_DATASOURCE,
   scope: Scope.REQUEST,
   useFactory: (request: ExpressRequest) => {
     const { tenant } = request;
 
     if (tenant) {
-      return getTenantConnection(tenant.id);
+      return getTenantDatasource(tenant.id);
     }
 
     throw new ForbiddenException('You are not logged in.');
@@ -22,6 +22,6 @@ const connectionFactory = {
 @Global()
 @Module({
   providers: [connectionFactory],
-  exports: [TENANT_CONNECTION],
+  exports: [TENANT_DATASOURCE],
 })
 export class TenancyModule {}

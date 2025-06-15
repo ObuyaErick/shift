@@ -6,17 +6,17 @@ import {
 } from '@nestjs/common';
 import { random } from 'lodash';
 import { OTP } from './otp.entity';
-import { Connection, EntityManager } from 'typeorm';
-import { TENANT_CONNECTION } from 'src/modules/tenancy/tenancy.symbols';
+import { DataSource, EntityManager } from 'typeorm';
+import { TENANT_DATASOURCE } from 'src/modules/tenancy/tenancy.symbols';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class OtpService {
   private readonly otpRepository: Repository<OTP>;
   constructor(
-    @Inject(TENANT_CONNECTION) private readonly tenantConnection: Connection,
+    @Inject(TENANT_DATASOURCE) private readonly tenantDatasource: DataSource,
   ) {
-    this.otpRepository = tenantConnection.getRepository(OTP);
+    this.otpRepository = tenantDatasource.getRepository(OTP);
   }
 
   async create(userId: string, transactionEntityManager?: EntityManager) {

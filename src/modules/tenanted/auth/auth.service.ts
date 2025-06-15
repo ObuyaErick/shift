@@ -7,11 +7,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dto/signin.dto';
 import { MailService } from 'src/mail/mail.service';
-import { PasswordService } from 'src/lib/password.service';
+import { PasswordService } from 'src/passwords/password.service';
 import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
 import { User } from 'src/modules/tenanted/user.entity';
-import { JWTSessionPayload } from 'src/lib/types';
 import { TenantsService } from '../../public/tenants/tenants.service';
+import { JWTSessionPayload } from 'src/auth.types';
 
 @Injectable()
 export class AuthService {

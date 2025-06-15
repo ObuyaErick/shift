@@ -1,5 +1,5 @@
 import { IsStrongPassword, Length, ValidateIf } from 'class-validator';
-import { IsMatching } from 'src/lib/ismatching.validator';
+import { IsMatching } from 'src/validators/ismatching.validator';
 
 export class PasswordResetDto {
   @IsStrongPassword({ minLength: 8 }, { message: 'weak password' })

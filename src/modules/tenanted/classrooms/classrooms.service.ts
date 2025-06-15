@@ -5,21 +5,21 @@ import {
   UpdateClassroomDto,
 } from './dto/update-classroom.dto';
 import { Classroom } from './entities/classroom.entity';
-import { Connection, Repository } from 'typeorm';
-import { TENANT_CONNECTION } from 'src/modules/tenancy/tenancy.symbols';
+import { DataSource, Repository } from 'typeorm';
+import { TENANT_DATASOURCE } from 'src/modules/tenancy/tenancy.symbols';
 import { Teacher } from '../staff/entities/teacher.entity';
-import { Crud } from 'src/lib/crud';
 import { StaffService } from '../staff/staff.service';
+import { Crud } from 'src/db/crud';
 
 @Injectable()
 export class ClassroomsService {
   private readonly classroomsRepository: Repository<Classroom>;
 
   constructor(
-    @Inject(TENANT_CONNECTION) private readonly tenantConnection: Connection,
+    @Inject(TENANT_DATASOURCE) private readonly tenantDatasource: DataSource,
     private readonly staffService: StaffService,
   ) {
-    this.classroomsRepository = tenantConnection.getRepository(Classroom);
+    this.classroomsRepository = tenantDatasource.getRepository(Classroom);
   }
 
   async create(createClassroomDto: CreateClassroomDto) {

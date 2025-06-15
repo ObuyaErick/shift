@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, Unique } from 'typeorm';
 import { Subscription } from './subscription.entity';
-import { AbstractEntity } from 'src/lib/abstract.entity';
+import { AbstractEntity } from 'src/db/abstract.entity';
 
 @Entity({ name: 'features' })
 @Unique(['name'])

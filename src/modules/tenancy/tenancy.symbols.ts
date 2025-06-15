@@ -1,1 +1,1 @@
-export const TENANT_CONNECTION: symbol = Symbol('TENANT_CONNECTION');
+export const TENANT_DATASOURCE: symbol = Symbol('TENANT_DATASOURCE');

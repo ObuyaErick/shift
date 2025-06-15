@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getTenantConnection } from 'src/modules/tenancy/tenancy.utils';
-import { Crud } from 'src/lib/crud';
 import { Tenant } from './entities/tenant.entity';
 import { CreateTenantDto } from './dto/create-tenant.dto';
+import { Crud } from 'src/db/crud';
 
 @Injectable()
 export class TenantsService {

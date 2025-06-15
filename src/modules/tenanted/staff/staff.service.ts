@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateTeacherDto } from './dto/create-teacher-dto';
-import { Connection, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Staff } from './entities/staff.entity';
 import { Teacher } from './entities/teacher.entity';
-import { TENANT_CONNECTION } from 'src/modules/tenancy/tenancy.symbols';
+import { TENANT_DATASOURCE } from 'src/modules/tenancy/tenancy.symbols';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
-import { Crud } from 'src/lib/crud';
+import { Crud } from 'src/db/crud';
 
 @Injectable()
 export class StaffService {
@@ -13,14 +13,14 @@ export class StaffService {
   private readonly teacherRepository: Repository<Teacher>;
 
   constructor(
-    @Inject(TENANT_CONNECTION) private readonly tenantConnection: Connection,
+    @Inject(TENANT_DATASOURCE) private readonly tenantDatasource: DataSource
   ) {
-    this.staffRepository = tenantConnection.getRepository(Staff);
-    this.teacherRepository = tenantConnection.getRepository(Teacher);
+    this.staffRepository = tenantDatasource.getRepository(Staff);
+    this.teacherRepository = tenantDatasource.getRepository(Teacher);
   }
 
   async createTeacher(createTeacherDto: CreateTeacherDto) {
-    const entityManager = this.tenantConnection.createEntityManager();
+    const entityManager = this.tenantDatasource.createEntityManager();
     return entityManager.transaction(async (manager) => {
       const staff = await manager.save(
         Staff,

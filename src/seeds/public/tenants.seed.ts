@@ -1,6 +1,6 @@
-import { PasswordService } from 'src/lib/password.service';
 import { CreateTenantDto } from 'src/modules/public/tenants/dto/create-tenant.dto';
 import { Tenant } from 'src/modules/public/tenants/entities/tenant.entity';
+import { PasswordService } from 'src/passwords/password.service';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 

@@ -7,7 +7,7 @@ import { CaslAbilityFactory } from 'src/casl/casl-ability-factory';
 import {
   REQUIRED_POLICIES_KEY,
   RequiredPolicy,
-} from 'src/lib/decorators/required-policy.decorator';
+} from 'src/decorators/required-policy.decorator';
 
 @Injectable()
 export class AccessPoliciesGuard<A extends string, S extends CaslSubject>
