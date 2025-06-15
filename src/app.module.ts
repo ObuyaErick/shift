@@ -27,6 +27,8 @@ import { SubjectsController } from './modules/tenanted/subjects/subjects.control
 import { SubscriptionsModule } from './modules/public/subscriptions/subscriptions.module';
 import { AccessPoliciesModule } from './access-policies/access-policies.module';
 import { UsersModule } from './modules/tenanted/users/users.module';
+import { UsersController } from './modules/tenanted/users/users.controller';
+import { SessionController } from './modules/tenanted/auth/session.controller';
 
 @Module({
   imports: [
@@ -92,11 +94,13 @@ export class AppModule implements NestModule {
     consumer
       .apply(TenancyMiddleware)
       .forRoutes(
+        SessionController,
         ClassroomsController,
         StudentsController,
         StaffController,
         ParentsController,
         SubjectsController,
+        UsersController,
       );
   }
 }

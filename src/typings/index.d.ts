@@ -1,5 +1,8 @@
-import { Authentication } from 'src/lib/types';
 import { Tenant } from 'src/modules/public/tenants/entities/tenant.entity';
+import {
+  Authentication,
+  JWTSessionPayload,
+} from 'src/modules/tenanted/auth/auth.types';
 
 declare global {
   namespace Express {

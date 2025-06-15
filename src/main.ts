@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import { DataSource } from 'typeorm';
 import { TypeOrmFilter } from './filters/typeorm.filter';
 import { ExcludeSensitiveDataInterceptor } from './interceptors/interceptor.sensitive-data';
+import runMigrationsForAllTenants from './modules/tenancy/run-tenant-migrations';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,29 +17,11 @@ async function bootstrap() {
   // await publicDataSource.query(`CREATE SCHEMA IF NOT EXISTS tenancy_dev_migrations`);
 
   // Run public migrations if one is pending
-  if (await publicDataSource.showMigrations()) {
-    // await publicDataSource.runMigrations();
-  }
-
-  // // Fetch all tenants
-  // const tenants = await publicDataSource.getRepository(Tenant).find();
-
-  // for (const tenant of tenants) {
-  //   const tenantId = tenant.id.replaceAll('-', '_');
-  //   const tenantConnection = await getTenantConnection(tenant.id);
-
-  //   // Create tenant schema if it does not exist
-  //   await tenantConnection.query(
-  //     `CREATE SCHEMA IF NOT EXISTS tenant_${tenantId}`,
-  //   );
-
-  //   // Check if there exists any pending migrations for the tenant
-  //   if (await tenantConnection.showMigrations()) {
-  //     // console.log(`Running migrations for tenant ${tenant.id}...`);
-  //     await tenantConnection.runMigrations();
-  //     // console.log(`Migrations for tenant ${tenant.id} completed.`);
-  //   }
+  // if (await publicDataSource.showMigrations()) {
+  //   await publicDataSource.runMigrations();
   // }
+
+  await runMigrationsForAllTenants(publicDataSource);
 
   // --------------------------------------------------------------------------------------------------
 

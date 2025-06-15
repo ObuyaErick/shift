@@ -1,10 +1,13 @@
 import { Expose } from 'class-transformer';
-import { Tenant } from './modules/public/tenants/entities/tenant.entity';
+import { Tenant } from 'src/modules/public/tenants/entities/tenant.entity';
+import { User } from '../users/entities/user.entity';
+import { OmitType, PickType } from '@nestjs/mapped-types';
 
 export const SESSION_KEY = 'session' as const;
 
 export interface JWTSessionPayload {
   sub: string;
+  email?: string | null;
   username: string;
   tenant: { id: string; username: string };
 }
@@ -24,19 +27,27 @@ export class GrantedAuthority {
 }
 
 // Current logged in user
-export class Principal {
-  @Expose()
-  username: string;
+export class Principal extends OmitType(User, [
+  'password',
+  'setPassword',
+  'createdAt',
+  'updatedAt',
+]) {}
 
-  @Expose()
-  id: string;
-}
+export class TenantDetails extends PickType(Tenant, [
+  'id',
+  'username',
+  'name',
+  'email',
+  'address',
+  'logo',
+]) {}
 
 // Authentication context
 export class Authentication {
   #authorities: Array<GrantedAuthority>;
   #principal: Principal;
-  #tenant: Tenant | null;
+  #tenant: TenantDetails | null;
 
   private constructor() {
     this.#authorities = [];
@@ -57,7 +68,8 @@ export class Authentication {
   }
 
   setTenant(tenant: Tenant): Authentication {
-    this.#tenant = tenant;
+    const { id, username, name, email, address, logo } = tenant;
+    this.#tenant = { id, username, name, email, address, logo };
     return this;
   }
 

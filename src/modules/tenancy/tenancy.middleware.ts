@@ -5,12 +5,15 @@ import {
 } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { TenantsService } from '../public/tenants/tenants.service';
-import { Authentication, JWTSessionPayload } from 'src/auth.types';
-import { SESSION_KEY } from 'src/auth.types';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { getTenantDatasource } from './tenancy.datasource';
 import { User } from '../tenanted/users/entities/user.entity';
+import {
+  Authentication,
+  JWTSessionPayload,
+  SESSION_KEY,
+} from '../tenanted/auth/auth.types';
 
 @Injectable()
 export class TenancyMiddleware implements NestMiddleware {
@@ -30,9 +33,7 @@ export class TenancyMiddleware implements NestMiddleware {
     const token = this.extractTokenFromHeaderOrCookie(request);
 
     if (!token) {
-      throw new UnauthorizedException(
-        'Authentication details not found, you are not signed in.',
-      );
+      throw new UnauthorizedException('Authentication details not found.');
     }
 
     // Extract the payload from the jwt
@@ -59,8 +60,8 @@ export class TenancyMiddleware implements NestMiddleware {
         );
       });
 
-    // Attach tenant id
-    request.tenant = tenant;
+    // Attach tenant
+    request.tenant = tenant
 
     // Attaching authtentication context (user details) to the request object
     request.authentication = Authentication.build()
@@ -68,6 +69,8 @@ export class TenancyMiddleware implements NestMiddleware {
       .setPrincipal({
         id: user.id,
         username: user.username,
+        email: user.email,
+        role: user.role,
       })
       .setTenant(tenant);
 

@@ -20,18 +20,13 @@ export class OtpService {
   }
 
   async create(userId: string, transactionEntityManager?: EntityManager) {
-    return this.otpRepository.save({ id: userId, value: this.generateOTP(6) });
-
-    /*return (transactionEntityManager || this.otpRepository).upsert({
-      where: { userId },
-      update: {
-        createdAt: new Date().toISOString(),
-      },
-      create: {
-        value: this.generateOTP(6),
-        userId,
-      },
-    });*/
+    return (
+      transactionEntityManager || this.tenantDatasource.createEntityManager()
+    ).save(OTP, {
+      user: { id: userId },
+      value: this.generateOTP(6),
+      createdAt: new Date(),
+    });
   }
 
   async verify(otp: string, transactionEntityManager?: EntityManager) {

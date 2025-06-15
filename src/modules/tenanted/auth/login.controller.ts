@@ -1,21 +1,19 @@
 import {
   Body,
   Controller,
-  Get,
   HttpStatus,
   Post,
-  Request,
   Res,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/signin.dto';
-import { Response, Request as ExpressRequest } from 'express';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { SESSION_KEY } from 'src/auth.types';
+import { SESSION_KEY } from './auth.types';
 
 @Controller('auth')
-export class AuthController {
+export class LoginController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
@@ -45,29 +43,7 @@ export class AuthController {
 
     return {
       message: 'Signed in successfully.',
-    };
-  }
-
-  @Get('current-user')
-  currentUser(@Request() req: ExpressRequest) {
-    return {
-      principal: req.authentication?.principal,
-      authorities: req.authentication?.authorities,
-      tenant: req.authentication?.tenant,
-    };
-  }
-
-  @Post('signout')
-  signout(@Res({ passthrough: true }) response: Response) {
-    // Clear the 'session' cookie
-    response.clearCookie(SESSION_KEY, {
-      httpOnly: true,
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
-      sameSite: 'lax',
-    });
-
-    return {
-      message: 'Logout successful',
+      access_token: sign.access_token,
     };
   }
 

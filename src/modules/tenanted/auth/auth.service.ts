@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,9 +11,16 @@ import { SignInDto } from './dto/signin.dto';
 import { MailService } from 'src/mail/mail.service';
 import { PasswordService } from 'src/passwords/password.service';
 import { TenantsService } from '../../public/tenants/tenants.service';
-import { JWTSessionPayload } from 'src/auth.types';
 import { getTenantDatasource } from 'src/modules/tenancy/tenancy.datasource';
 import { User } from '../users/entities/user.entity';
+import { JWTSessionPayload } from './auth.types';
+import { PasswordResetDto } from './dto/password-reset.dto';
+import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
+import { OtpService } from '../otp/otp.service';
+import { UsersService } from '../users/users.service';
+import { DataSource } from 'typeorm';
+import { TENANT_DATASOURCE } from 'src/modules/tenancy/tenancy.symbols';
+import { OTP } from '../otp/otp.entity';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +29,10 @@ export class AuthService {
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
     private readonly tenantsService: TenantsService,
+    private readonly usersService: UsersService,
+    private readonly otpService: OtpService,
+    @Inject(TENANT_DATASOURCE)
+    private readonly tenantDataSource: DataSource,
   ) {}
 
   async signIn({ username, password, tenant }: SignInDto) {
@@ -47,6 +60,7 @@ export class AuthService {
 
     const payload: JWTSessionPayload = {
       sub: _user.id,
+      email: _user.email,
       username: _user.username,
       tenant: { id: _tenant.id, username: _tenant.username },
     };
@@ -56,109 +70,59 @@ export class AuthService {
     };
   }
 
-  // async passwordResetRequest({ identity }: PasswordResetRequestDto) {
-  //   const user =
-  //     await this.usersService.findByUsernameOrEmailOrPhoneNumber(identity);
+  async requestPasswordReset({ username }: PasswordResetRequestDto) {
+    const user = await this.usersService.findByUsernameOrEmail(username);
 
-  //   const host = this.configService.get<string>('VUE_FRONTEND');
-  //   const path = '/reset-password';
-  //   const url = `${host}${path}`;
+    if (!user.email) {
+      throw new BadRequestException('No email associated with this account.');
+    }
 
-  //   return this.prisma.$transaction(async (tx) => {
-  //     const otp = await this.otpService.create(user.id, tx);
+    const host = this.configService.getOrThrow<string>('FRONTEND_HOST');
+    const path = '/reset-password';
+    const url = new URL(path, host).toString();
 
-  //     // Send mail
-  //     await this.mailService.sendPasswordResetRequestMail({
-  //       options: {
-  //         subject: 'Reset your password',
-  //         to: user.email,
-  //         template: 'password-reset',
-  //       },
-  //       context: {
-  //         otp: otp.value,
-  //         uiURL: url,
-  //         name: user.firstName,
-  //       },
-  //     });
+    return this.tenantDataSource.transaction(async (entityManager) => {
+      const otp = await this.otpService.create(user.id, entityManager);
 
-  //     return {
-  //       message:
-  //         'Please follow the instructions sent to your email to reset your password.',
-  //     };
-  //   });
-  // }
+      // Send mail
+      await this.mailService.sendPasswordResetRequestMail({
+        options: {
+          subject: 'Reset your password',
+          to: user.email,
+          template: 'password-reset',
+        },
+        context: {
+          otp: otp.value,
+          uiURL: url,
+          name: user.username,
+        },
+      });
 
-  // async requestOtpPublic(otpRequest: PublicOtpRequest) {
-  //   const user = await this.usersService.findByUsernameOrEmailOrPhoneNumber(
-  //     otpRequest.identity,
-  //   );
+      return {
+        message:
+          'Please follow the instructions sent to your email to reset your password.',
+      };
+    });
+  }
 
-  //   return this.prisma.$transaction(async (tx) => {
-  //     const otp = await this.otpService.create(user.id, tx);
+  async passwordReset({ newPassword, otp }: PasswordResetDto) {
+    return this.tenantDataSource.transaction(async (entityManager) => {
+      const oneTimePassword = await this.otpService.verify(otp, entityManager);
 
-  //     // Send otp via mail
-  //     await this.mailService.sendOtpRequestMail({
-  //       options: {
-  //         subject: otpRequest.reason,
-  //         to: user.email,
-  //         template: 'otp-request',
-  //       },
-  //       context: {
-  //         otp: otp.value,
-  //         name: user.firstName,
-  //       },
-  //     });
+      const user = oneTimePassword.user;
 
-  //     return {
-  //       message: 'A one-time-password has been sent your email.',
-  //     };
-  //   });
-  // }
+      await entityManager.getRepository(User).update(
+        {
+          id: user.id,
+        },
+        {
+          password: PasswordService.hashedPassword(newPassword),
+        },
+      );
 
-  // async requestOtpAuthenticated(
-  //   otpRequest: AuthenticatedOtpRequest,
-  //   currentUser: Principal,
-  // ) {
-  //   return this.prisma.$transaction(async (tx) => {
-  //     const otp = await this.otpService.create(currentUser.id, tx);
-
-  //     // Send otp via mail
-  //     await this.mailService.sendOtpRequestMail({
-  //       options: {
-  //         subject: otpRequest.reason,
-  //         to: currentUser.email,
-  //         template: 'otp-request',
-  //       },
-  //       context: {
-  //         otp: otp.value,
-  //         name: currentUser.username,
-  //       },
-  //     });
-
-  //     return {
-  //       message: 'A one-time-password has been sent your email.',
-  //     };
-  //   });
-  // }
-
-  // async passwordReset({ newPassword, otp }: PasswordResetDto) {
-  //   return this.prisma.$transaction(async (tx) => {
-  //     const oneTimePassword = await this.otpService.verify(otp, tx);
-
-  //     const user = oneTimePassword.user;
-
-  //     await this.usersService.updateUser({
-  //       where: {
-  //         id: user.id,
-  //       },
-  //       data: {
-  //         passwordDigest: PasswordService.hashedPassword(newPassword),
-  //       },
-  //     });
-
-  //     return {
-  //       message: 'You have successfully reset your password.',
-  //     };
-  //   });
-  // }
+      return {
+        message: 'You have successfully reset your password.',
+      };
+    });
+  }
 }
