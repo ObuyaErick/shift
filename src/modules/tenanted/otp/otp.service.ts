@@ -1,52 +1,55 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { random } from 'lodash';
 import { OTP } from './otp.entity';
-import { DataSource, EntityManager } from 'typeorm';
-import { TENANT_DATASOURCE } from 'src/modules/tenancy/tenancy.symbols';
-import { Repository } from 'typeorm';
+import { EntityManager } from 'typeorm';
+
+// Milliseconds
+export const OTP_EXPIRY_WINDOW = 5 * 60 * 1000;
 
 @Injectable()
 export class OtpService {
-  private readonly otpRepository: Repository<OTP>;
-  constructor(
-    @Inject(TENANT_DATASOURCE) private readonly tenantDatasource: DataSource,
-  ) {
-    this.otpRepository = tenantDatasource.getRepository(OTP);
-  }
+  constructor() {}
 
-  async create(userId: string, transactionEntityManager?: EntityManager) {
-    return (
-      transactionEntityManager || this.tenantDatasource.createEntityManager()
-    ).save(OTP, {
-      user: { id: userId },
-      value: this.generateOTP(6),
-      createdAt: new Date(),
+  async create(userId: string, entityManager: EntityManager) {
+    await entityManager.upsert(
+      OTP,
+      {
+        user: { id: userId },
+        value: this.generateOTP(6),
+        createdAt: new Date(),
+      },
+      ['user'],
+    );
+    return entityManager.findOneOrFail(OTP, {
+      where: { user: { id: userId } },
+      relations: ['user'],
     });
   }
 
-  async verify(otp: string, transactionEntityManager?: EntityManager) {
-    const oneTimePassword = await this.otpRepository
-      .findOneByOrFail({
-        value: otp,
+  async verify(otp: string, entityManager: EntityManager) {
+    const otpRepository = entityManager.getRepository(OTP);
+    const oneTimePassword = await otpRepository
+      .findOneOrFail({
+        where: { value: otp },
+        relations: ['user'],
       })
       .catch(() => {
         throw new NotFoundException('Invalid or expired otp.');
       });
     if (this.isExpired(oneTimePassword)) {
-      await this.otpRepository.delete({
-        value: otp,
-      });
       throw new BadRequestException('Sorry! This OTP expired.');
     }
     return oneTimePassword;
   }
 
-  isExpired(otp: OTP, ms: number = 60 * 1000) {
+  isExpired(
+    otp: OTP,
+    ms: number = OTP_EXPIRY_WINDOW, // 5 minutes
+  ) {
     const created = new Date(otp.createdAt).getTime();
     const now = Date.now();
     return now > created + ms;

@@ -1,7 +1,15 @@
-import { IsStrongPassword, Length, ValidateIf } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsStrongPassword,
+  Length,
+  ValidateIf,
+} from 'class-validator';
 import { IsMatching } from 'src/validators/ismatching.validator';
 
 export class PasswordResetDto {
+  @IsNotEmpty({ message: 'please identify your school' })
+  tenant: string;
+  
   @IsStrongPassword({ minLength: 8 }, { message: 'weak password' })
   newPassword: string;
 

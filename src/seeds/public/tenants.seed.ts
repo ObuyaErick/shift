@@ -24,7 +24,7 @@ export default class UserSeeder implements Seeder {
       const createTenantDto: CreateTenantDto = {
         name: 'Victoria',
         username: 'victoria',
-        email: 'victoria@lernivo.com',
+        email: 'erickochiengobuya@gmail.com', //'victoria@lernivo.com',
         address: 'P.O. Box 335, Homabay.',
         logo: '',
         password: PasswordService.hashedPassword('victoria'),

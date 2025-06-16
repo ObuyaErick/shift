@@ -18,9 +18,9 @@ export default async function runMigrationsForAllTenants(
 
     // Check if there exists any pending migrations for the tenant
     if (await tenantDatasource.showMigrations()) {
-      // console.log(`Running migrations for tenant ${tenant.id}...`);
+      console.log(`Running migrations for tenant ${tenant.id}...`);
       await tenantDatasource.runMigrations();
-      // console.log(`Migrations for tenant ${tenant.id} completed.`);
+      console.log(`Migrations for tenant ${tenant.id} completed.`);
     }
   }
 }

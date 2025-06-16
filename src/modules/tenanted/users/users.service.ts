@@ -28,6 +28,12 @@ export class UsersService {
     return await this.usersRepository.findOneOrFail({ where: { id } });
   }
 
+  async findByUsernameOrEmail(usernameOrEmail: string) {
+    return await this.usersRepository.findOneOrFail({
+      where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+    });
+  }
+
   update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }

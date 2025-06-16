@@ -5,17 +5,13 @@ import {
   Post,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { ConfigService } from '@nestjs/config';
 import { PasswordResetRequestDto } from './dto/password-reset-request.dto';
 import { PasswordResetDto } from './dto/password-reset.dto';
+import { AuthSupportService } from './auth-support.service';
 
-@Controller('auth')
+@Controller('auth/support')
 export class AuthSupportController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly authSupportService: AuthSupportService) {}
 
   @Post('request-password-reset')
   async requestPasswordReset(
@@ -26,7 +22,9 @@ export class AuthSupportController {
     )
     passwordResetRequestDto: PasswordResetRequestDto,
   ) {
-    return await this.authService.requestPasswordReset(passwordResetRequestDto);
+    return await this.authSupportService.requestPasswordReset(
+      passwordResetRequestDto,
+    );
   }
 
   @Post('reset-password')
@@ -38,6 +36,6 @@ export class AuthSupportController {
     )
     passwordResetDto: PasswordResetDto,
   ) {
-    return await this.authService.passwordReset(passwordResetDto);
+    return await this.authSupportService.passwordReset(passwordResetDto);
   }
 }
