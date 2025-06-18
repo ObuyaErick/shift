@@ -17,7 +17,7 @@ export const publicDatasourceOptions: DataSourceOptions & SeederOptions = {
   password: 'postgres',
   database: 'postgres',
   namingStrategy: new SnakeNamingStrategy(),
-  logging: true,
+  // logging: true,
   synchronize: false,
   migrationsRun: false,
   extra: {

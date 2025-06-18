@@ -11,6 +11,8 @@ import {
 import { Classroom } from '../../classrooms/entities/classroom.entity';
 import { Parent } from '../../parents/entities/parent.entity';
 import { User } from '../../users/entities/user.entity';
+import { Gender } from '../../gender.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity({ name: 'students' })
 export class Student extends AbstractEntity {
@@ -24,7 +26,8 @@ export class Student extends AbstractEntity {
   surname: string;
 
   @Column()
-  gender: string;
+  @IsEnum(Gender)
+  gender: Gender;
 
   @Column()
   dateOfBirth: string;

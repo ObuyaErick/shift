@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  HttpCode,
   HttpStatus,
   Post,
   Res,
@@ -20,6 +21,7 @@ export class LoginController {
   ) {}
 
   @Post('signin')
+  @HttpCode(HttpStatus.OK)
   async signIn(
     @Body(
       new ValidationPipe({
@@ -43,7 +45,7 @@ export class LoginController {
 
     return {
       message: 'Signed in successfully.',
-      access_token: sign.access_token,
+      accessToken: sign.access_token,
     };
   }
 }
