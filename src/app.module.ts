@@ -29,6 +29,7 @@ import { AccessPoliciesModule } from './access-policies/access-policies.module';
 import { UsersModule } from './modules/tenanted/users/users.module';
 import { UsersController } from './modules/tenanted/users/users.controller';
 import { SessionController } from './modules/tenanted/auth/session.controller';
+import { RequestLoggingMiddleware } from './logging/request.logging.middleware';
 
 @Module({
   imports: [
@@ -102,5 +103,7 @@ export class AppModule implements NestModule {
         SubjectsController,
         UsersController,
       );
+
+    consumer.apply(RequestLoggingMiddleware).forRoutes('*');
   }
 }

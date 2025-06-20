@@ -43,18 +43,20 @@ export class AuthSupportService {
       const otp = await this.otpService.create(user.id, entityManager);
 
       // Send mail
-      await this.mailService.sendPasswordResetRequestMail({
-        options: {
-          subject: 'Reset your password',
-          to: user.email,
-          template: 'password-reset',
-        },
-        context: {
-          otp: otp.value,
-          uiURL: url,
-          name: user.username,
-        },
-      });
+      // await this.mailService.sendPasswordResetRequestMail({
+      //   options: {
+      //     subject: 'Reset your password',
+      //     to: user.email,
+      //     template: 'password-reset',
+      //   },
+      //   context: {
+      //     otp: otp.value,
+      //     uiURL: url,
+      //     name: user.username,
+      //   },
+      // });
+
+      console.log(otp);
 
       return {
         message:

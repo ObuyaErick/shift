@@ -31,6 +31,7 @@ export class LoginController {
     signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('POST: ', 'auth/signin');
     const sign = await this.loginService.signIn(signInDto);
 
     response.cookie(SESSION_KEY, sign.access_token, {

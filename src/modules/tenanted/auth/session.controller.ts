@@ -17,6 +17,7 @@ export class SessionController {
 
   @Get('current-user')
   currentUser(@Request() req: ExpressRequest) {
+    console.log('GET: ', 'session/current-user');
     return {
       principal: req.authentication?.principal,
       authorities: req.authentication?.authorities,
