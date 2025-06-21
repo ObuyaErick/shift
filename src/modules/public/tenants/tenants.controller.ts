@@ -3,38 +3,37 @@ import {
   Get,
   Post,
   Body,
-  ValidationPipe,
   Param,
   ParseUUIDPipe,
   BadRequestException,
-  HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
+import { APIResponse } from 'src/typings/api.response';
+import { TenantDetails } from './entities/tenant.entity';
 
 @Controller('tenants')
 export class TenantsController {
   constructor(private readonly tenantsService: TenantsService) {}
 
   @Post()
-  create(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
+  async create(
+    @Body()
     createTenantDto: CreateTenantDto,
-  ) {
-    return this.tenantsService.create(createTenantDto);
+  ): Promise<APIResponse<TenantDetails>> {
+    return await this.tenantsService.create(createTenantDto);
   }
 
   @Get()
-  findAll() {
-    return this.tenantsService.findAll();
+  async findAll(
+    @Query('q') search: string,
+  ): Promise<APIResponse<TenantDetails[]>> {
+    return await this.tenantsService.findAll(search);
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @Param(
       'id',
       new ParseUUIDPipe({
@@ -43,7 +42,7 @@ export class TenantsController {
       }),
     )
     id: string,
-  ) {
-    return this.tenantsService.find({ id });
+  ): Promise<APIResponse<TenantDetails>> {
+    return await this.tenantsService.find({ id });
   }
 }

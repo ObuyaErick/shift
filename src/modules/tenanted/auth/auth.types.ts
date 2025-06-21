@@ -1,7 +1,10 @@
 import { Expose } from 'class-transformer';
-import { Tenant } from 'src/modules/public/tenants/entities/tenant.entity';
+import {
+  Tenant,
+  TenantDetails,
+} from 'src/modules/public/tenants/entities/tenant.entity';
 import { User } from '../users/entities/user.entity';
-import { OmitType, PickType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/mapped-types';
 
 export const SESSION_KEY = 'session' as const;
 
@@ -32,15 +35,6 @@ export class Principal extends OmitType(User, [
   'setPassword',
   'createdAt',
   'updatedAt',
-]) {}
-
-export class TenantDetails extends PickType(Tenant, [
-  'id',
-  'username',
-  'name',
-  'email',
-  'address',
-  'logo',
 ]) {}
 
 // Authentication context

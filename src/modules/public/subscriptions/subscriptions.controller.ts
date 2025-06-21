@@ -10,14 +10,16 @@ import {
 import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+import { Subscription } from './entities/subscription.entity';
+import { APIResponse } from 'src/typings/api.response';
 
 @Controller('subscriptions')
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   @Post()
-  create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
-    return this.subscriptionsService.create(createSubscriptionDto);
+  async create(@Body() createSubscriptionDto: CreateSubscriptionDto): Promise<APIResponse<Subscription>> {
+    return await this.subscriptionsService.create(createSubscriptionDto);
   }
 
   @Get()

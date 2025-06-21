@@ -5,13 +5,13 @@ import {
   HttpStatus,
   Post,
   Res,
-  ValidationPipe,
 } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { SESSION_KEY } from './auth.types';
 import { LoginService } from './login.service';
+import { APIResponse } from 'src/typings/api.response';
 
 @Controller('auth')
 export class LoginController {
@@ -23,18 +23,13 @@ export class LoginController {
   @Post('signin')
   @HttpCode(HttpStatus.OK)
   async signIn(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
+    @Body()
     signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
-  ) {
-    console.log('POST: ', 'auth/signin');
+  ): Promise<APIResponse<{ accessToken: string }>> {
     const sign = await this.loginService.signIn(signInDto);
 
-    response.cookie(SESSION_KEY, sign.access_token, {
+    response.cookie(SESSION_KEY, sign.data.accessToken, {
       httpOnly: true,
       // Cookie to be sent over https in production environment
       secure: this.configService.get<string>('NODE_ENV') === 'production',
@@ -44,9 +39,6 @@ export class LoginController {
       sameSite: 'lax',
     });
 
-    return {
-      message: 'Signed in successfully.',
-      accessToken: sign.access_token,
-    };
+    return sign;
   }
 }

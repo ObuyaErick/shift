@@ -10,6 +10,7 @@ import { TenantsService } from '../../public/tenants/tenants.service';
 import { getTenantDatasource } from 'src/modules/tenancy/tenancy.datasource';
 import { User } from '../users/entities/user.entity';
 import { JWTSessionPayload } from './auth.types';
+import { APIResponse } from 'src/typings/api.response';
 
 @Injectable()
 export class LoginService {
@@ -18,9 +19,13 @@ export class LoginService {
     private readonly tenantsService: TenantsService,
   ) {}
 
-  async signIn({ username, password, tenant }: SignInDto) {
+  async signIn({
+    username,
+    password,
+    tenant,
+  }: SignInDto): Promise<APIResponse<{ accessToken: string }>> {
     // Attempt to find tenant by username
-    const _tenant = await this.tenantsService.find({
+    const { data: _tenant } = await this.tenantsService.find({
       username: tenant,
     });
 
@@ -45,7 +50,10 @@ export class LoginService {
     };
 
     return {
-      access_token: await this.jwtService.signAsync(payload, {}),
+      data: {
+        accessToken: await this.jwtService.signAsync(payload, {}),
+      },
+      message: 'Signed in successfully.',
     };
   }
 }

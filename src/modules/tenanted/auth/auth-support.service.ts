@@ -9,6 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { PasswordService } from 'src/passwords/password.service';
 import { OtpService } from '../otp/otp.service';
 import { OTP } from '../otp/otp.entity';
+import { APIResponse } from 'src/typings/api.response';
 
 @Injectable()
 export class AuthSupportService {
@@ -19,9 +20,12 @@ export class AuthSupportService {
     private readonly otpService: OtpService,
   ) {}
 
-  async requestPasswordReset({ username, tenant }: PasswordResetRequestDto) {
+  async requestPasswordReset({
+    username,
+    tenant,
+  }: PasswordResetRequestDto): Promise<APIResponse<null>> {
     // Attempt to find tenant by username
-    const _tenant = await this.tenantsService.find({
+    const { data: _tenant } = await this.tenantsService.find({
       username: tenant,
     });
 
@@ -39,7 +43,7 @@ export class AuthSupportService {
     const path = '/reset-password';
     const url = new URL(path, host).toString();
 
-    return tenantDataSource.transaction(async (entityManager) => {
+    return await tenantDataSource.transaction(async (entityManager) => {
       const otp = await this.otpService.create(user.id, entityManager);
 
       // Send mail
@@ -56,24 +60,29 @@ export class AuthSupportService {
       //   },
       // });
 
-      console.log(otp);
+      console.log(['OTP: ', otp.value]);
 
       return {
         message:
           'Please follow the instructions sent to your email to reset your password.',
+        data: null,
       };
     });
   }
 
-  async passwordReset({ newPassword, otp, tenant }: PasswordResetDto) {
+  async passwordReset({
+    newPassword,
+    otp,
+    tenant,
+  }: PasswordResetDto): Promise<APIResponse<null>> {
     // Attempt to find tenant by username
-    const _tenant = await this.tenantsService.find({
+    const { data: _tenant } = await this.tenantsService.find({
       username: tenant,
     });
 
     // Find user
     const tenantDataSource = await getTenantDatasource(_tenant.id);
-    return tenantDataSource
+    return await tenantDataSource
       .transaction(async (entityManager) => {
         const oneTimePassword = await this.otpService
           .verify(otp, entityManager)
@@ -90,6 +99,7 @@ export class AuthSupportService {
 
         return {
           message: 'You have successfully reset your password.',
+          data: null,
         };
       })
       .finally(async () => {

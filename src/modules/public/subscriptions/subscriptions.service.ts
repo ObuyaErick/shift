@@ -1,11 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
+import { APIResponse } from 'src/typings/api.response';
+import { Repository } from 'typeorm';
+import { Subscription } from './entities/subscription.entity';
 
 @Injectable()
 export class SubscriptionsService {
-  create(createSubscriptionDto: CreateSubscriptionDto) {
-    return 'This action adds a new subscription';
+  constructor(
+    private readonly subscriptionRepository: Repository<Subscription>,
+  ) {}
+
+  async create(
+    createSubscriptionDto: CreateSubscriptionDto,
+  ): Promise<APIResponse<Subscription>> {
+    const subscription = await this.subscriptionRepository.save(
+      createSubscriptionDto,
+    );
+
+    return {
+      data: subscription,
+      message: 'Subscription created successfully',
+    };
   }
 
   findAll() {

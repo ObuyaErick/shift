@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { TypeOrmFilter } from './filters/typeorm.filter';
 import { ExcludeSensitiveDataInterceptor } from './interceptors/interceptor.sensitive-data';
 import runMigrationsForAllTenants from './modules/tenancy/run-tenant-migrations';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,7 +15,9 @@ async function bootstrap() {
   // Public schema datasource
   const publicDataSource = app.get(DataSource);
 
-  await publicDataSource.query(`CREATE SCHEMA IF NOT EXISTS tenancy_dev_migrations`);
+  await publicDataSource.query(
+    `CREATE SCHEMA IF NOT EXISTS tenancy_dev_migrations`,
+  );
 
   // Run public migrations if one is pending
   // if (await publicDataSource.showMigrations()) {
@@ -43,6 +46,14 @@ async function bootstrap() {
 
   // A global resource not found exception filter
   app.useGlobalFilters(new TypeOrmFilter());
+
+  // A global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      whitelist: true,
+    }),
+  );
 
   // Glodal sensitive data interceptor
   app.useGlobalInterceptors(new ExcludeSensitiveDataInterceptor());

@@ -9,25 +9,30 @@ import {
 } from '@nestjs/common';
 import { Response, Request as ExpressRequest } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { SESSION_KEY } from './auth.types';
+import { Authentication, SESSION_KEY } from './auth.types';
+import { APIResponse } from 'src/typings/api.response';
 
 @Controller('session')
 export class SessionController {
   constructor(private readonly configService: ConfigService) {}
 
-  @Get('current-user')
-  currentUser(@Request() req: ExpressRequest) {
-    console.log('GET: ', 'session/current-user');
+  @Get('current')
+  async currentUser(
+    @Request() req: ExpressRequest,
+  ): Promise<APIResponse<Partial<Authentication>>> {
     return {
-      principal: req.authentication?.principal,
-      authorities: req.authentication?.authorities,
-      tenant: req.authentication?.tenant,
+      data: {
+        principal: req.authentication?.principal,
+        authorities: req.authentication?.authorities,
+        tenant: req.authentication?.tenant,
+      },
+      message: 'Authentication Context',
     };
   }
 
   @Post('signout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  signout(@Res({ passthrough: true }) response: Response) {
+  signout(@Res({ passthrough: true }) response: Response): APIResponse<null> {
     // Clear the 'session' cookie
     response.clearCookie(SESSION_KEY, {
       httpOnly: true,
@@ -36,6 +41,7 @@ export class SessionController {
     });
 
     return {
+      data: null,
       message: 'Logout successful',
     };
   }
