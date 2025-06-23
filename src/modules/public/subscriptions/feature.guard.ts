@@ -1,18 +1,16 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { every } from 'lodash';
 import { Observable } from 'rxjs';
 import { REQUIRED_SUBSCRIPTION_FEATURES_KEY } from 'src/decorators/required-features.decorator';
+// import { TenantsService } from '../tenants/tenants.service';
 
 @Injectable()
 export class FeatureGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly reflector: Reflector,
+    // private readonly tenantservice: TenantsService,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
@@ -28,26 +26,26 @@ export class FeatureGuard implements CanActivate {
 
     const tenant = request.tenant;
 
-    if (!tenant || !tenant.subscriptionPlan) {
-      throw new ForbiddenException(
-        'Access denied: No subscription plan found.',
-      );
-    }
+    // if (!tenant || !tenant.subscriptionPlan) {
+    //   throw new ForbiddenException(
+    //     'Access denied: No subscription plan found.',
+    //   );
+    // }
 
-    const tenantFeatures = tenant.subscriptionPlan.features;
+    // const tenantFeatures = tenant.subscriptionPlan.features;
 
-    const hasAccess = every(requiredFeatures, (feature) =>
-      tenantFeatures.find(
-        (tenantFeatureSubscription) =>
-          tenantFeatureSubscription.name === feature,
-      ),
-    );
+    // const hasAccess = every(requiredFeatures, (feature) =>
+    //   tenantFeatures.find(
+    //     (tenantFeatureSubscription) =>
+    //       tenantFeatureSubscription.name === feature,
+    //   ),
+    // );
 
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'Access denied: Insufficient subscription privileges.',
-      );
-    }
+    // if (!hasAccess) {
+    //   throw new ForbiddenException(
+    //     'Access denied: Insufficient subscription privileges.',
+    //   );
+    // }
 
     return true;
   }

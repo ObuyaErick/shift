@@ -1,4 +1,4 @@
-import { Tenant } from 'src/modules/public/tenants/entities/tenant.entity';
+import { TenantDetails } from 'src/modules/public/tenants/entities/tenant.entity';
 import {
   Authentication,
   JWTSessionPayload,
@@ -7,7 +7,7 @@ import {
 declare global {
   namespace Express {
     interface Request {
-      tenant?: Tenant | null;
+      tenant?: TenantDetails | null;
       session?: JWTSessionPayload | null;
       authentication?: Authentication | null;
     }

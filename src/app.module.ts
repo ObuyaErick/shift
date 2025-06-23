@@ -36,6 +36,7 @@ import { RequestLoggingMiddleware } from './logging/request.logging.middleware';
     TypeOrmModule.forRoot(publicDatasourceOptions),
     TenantsModule,
     TenancyModule,
+    SubscriptionsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '.env.local'],
@@ -83,7 +84,6 @@ import { RequestLoggingMiddleware } from './logging/request.logging.middleware';
     ClassroomsModule,
     SubjectsModule,
     MailModule,
-    SubscriptionsModule,
     AccessPoliciesModule,
     UsersModule,
   ],

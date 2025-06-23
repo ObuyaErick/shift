@@ -47,7 +47,7 @@ export class TenancyMiddleware implements NestMiddleware {
         );
       });
 
-    const tenant = await this.tenantsService.find({
+    const { data: tenant } = await this.tenantsService.find({
       id: payload.tenant.id,
     });
     const user = await getTenantDatasource(tenant.id)
@@ -61,7 +61,7 @@ export class TenancyMiddleware implements NestMiddleware {
       });
 
     // Attach tenant
-    request.tenant = tenant
+    request.tenant = tenant;
 
     // Attaching authtentication context (user details) to the request object
     request.authentication = Authentication.build()

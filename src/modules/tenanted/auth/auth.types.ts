@@ -61,7 +61,7 @@ export class Authentication {
     return this;
   }
 
-  setTenant(tenant: Tenant): Authentication {
+  setTenant(tenant: TenantDetails): Authentication {
     const { id, username, name, email, address, logo } = tenant;
     this.#tenant = { id, username, name, email, address, logo };
     return this;

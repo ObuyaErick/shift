@@ -4,10 +4,12 @@ import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { APIResponse } from 'src/typings/api.response';
 import { Repository } from 'typeorm';
 import { Subscription } from './entities/subscription.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class SubscriptionsService {
   constructor(
+    @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
   ) {}
 
